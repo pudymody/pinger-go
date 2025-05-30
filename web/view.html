@@ -1,0 +1,101 @@
+<!doctype html>
+	<html>
+	<head>
+	<meta charset="UTF-8" /> 
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="/assets/open-props.min.css"/>
+	<link rel="stylesheet" href="/assets/normalize.min.css"/>
+	<script src="/assets/apexcharts.js"></script>
+	</head>
+	<body>
+		<style>
+			body {
+				max-width: 1420px;
+				margin: 0 auto;
+			}
+
+			header {
+				padding: var(--size-fluid-1);
+				font-size: var(--font-size-fluid-1);
+				text-align: center;
+				background: var(--gray-2);
+				position: sticky;
+				top: 0;
+				margin-bottom: var(--size-fluid-4);
+				z-index: 1;
+			}
+
+			header nav {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+
+			header a {
+				color: var(--gray-12);
+			}
+
+			.overview {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(min(100%, 600px), 1fr));
+				padding: var(--size-fluid-1);
+				gap: var(--size-fluid-1);
+			}
+
+			.card {
+				background: white;
+				border: var(--border-size-1) solid var(--gray-2);
+				padding: var(--size-fluid-2);
+				border-radius: var(--radius-2);
+				box-shadow: var(--shadow-1);		
+			}
+
+			.card h1 {
+				display: block;
+				width: 100%;
+				max-width: 100%;
+				font-size: var(--font-size-fluid-1);
+				text-align: center;
+			}
+		</style>
+		<header>
+			<nav>
+				<a href="/?from={{ .PreviousDay.Format "2006-01-02" }}">Previous</a>
+				<input type="date" value="{{ .CurrentDay.Format "2006-01-02" }}" onchange="window.location = '/?from='+this.value">
+				<a href="/?from={{ .NextDay.Format "2006-01-02" }}">Next</a>
+			</nav>
+		</header>
+		{{ range .Items }}
+			<div class="card card--block">
+				<h1>{{ .Endpoint.Domain }}</h1>
+				<div class="chart_{{ .Endpoint.ID }}"></div>
+			</div>
+			<script>
+				new ApexCharts(document.querySelector(".chart_{{ .Endpoint.ID }}"), {
+				 tooltip: { marker : { show: false }},
+					chart: {
+						height: 300,
+						type: 'line',
+						toolbar: { show: false },
+						zoom : { enabled : true }
+					},
+					stroke: {
+						width: 1.5
+					},
+					series: [{
+						name: 'Latency',
+						data: {{ hitLatencies .Hits }}
+					}],
+					xaxis: {
+					 type: 'datetime',
+						// labels: { show: false },
+						categories: {{ hitDates .Hits }}
+					},
+					annotations: {
+						xaxis: {{ hitAnnotations .Hits }} 
+					}
+				}).render();
+			</script>
+		{{ end }}
+	</body>
+</html>

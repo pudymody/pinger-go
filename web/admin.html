@@ -1,0 +1,98 @@
+<!doctype html>
+	<html>
+	<head>
+	<meta charset="UTF-8" /> 
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="/assets/open-props.min.css"/>
+	<link rel="stylesheet" href="/assets/normalize.min.css"/>
+	<script src="/assets/apexcharts.js"></script>
+	</head>
+	<body>
+		<style>
+			body {
+				max-width: 1420px;
+				margin: 0 auto;
+			}
+
+			.overview {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(min(100%, 600px), 1fr));
+				padding: var(--size-fluid-1);
+				gap: var(--size-fluid-1);
+			}
+
+			.card {
+				background: white;
+				border: var(--border-size-1) solid var(--gray-2);
+				padding: var(--size-fluid-2);
+				gap: var(--size-fluid-1);
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: space-between;
+				border-radius: var(--radius-2);
+				box-shadow: var(--shadow-1);		
+			}
+
+			.card input, .card label, .card button {
+				display: block;
+				width: 100%;
+			}
+
+			.card button, .button {
+				background: var(--green-1);
+				color: var(--green-11);
+				padding: var(--size-fluid-1);
+				border-radius: var(--radius-2);
+				font-size: var(--font-size-fluid-0);
+				display: block;
+				width: 100%;
+				text-align: center;
+			}
+			.card button:hover, .card button:active, .card button:focus
+			.button:hover, .button:active, .button:focus {
+				background: var(--green-3);
+			}
+		</style>
+		<div class="overview">
+			<form class="card" action="/endpoint" method="post">
+				<label for="new_domain">
+					Domain
+					<input id="new_domain" name="domain">
+				</label>
+
+				<label for="new_code_ok">
+					Code OK
+					<input id="new_code_ok" name="code_ok">
+				</label>
+
+				<label for="new_timeout">
+					Timeout
+					<input id="new_timeout" name="timeout" value="1m">
+				</label>
+
+				<button>Create</button>
+			</form>
+		{{ range . }}
+			<form class="card" action="/endpoint/{{ .ID }}" method="post">
+				<label for="{{ .ID }}_domain">
+					Domain
+					<input id="{{ .ID }}_domain" name="domain" value="{{ .Domain }}">
+				</label>
+
+				<label for="{{ .ID }}_code_ok">
+					Code OK
+					<input id="{{ .ID }}_code_ok" name="code_ok" value="{{ .CodeOK }}">
+				</label>
+
+				<label for="{{ .ID }}_timeout">
+					Timeout
+					<input id="{{ .ID }}_timeout" name="timeout" value="{{ .Timeout }}">
+				</label>
+
+				<button>Save</button>
+			</form>
+		{{ end }}
+		</div>
+	</body>
+</html>
