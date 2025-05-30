@@ -3,10 +3,7 @@ package web
 import (
 	"context"
 	"net/http"
-	"os"
-	"os/signal"
 	"strconv"
-	"syscall"
 	"html/template"
 	"time"
 	"fmt"
@@ -71,6 +68,7 @@ type Logger interface {
 
 type Server struct {
 	basePath        string
+	httpServer *http.Server
 	endpointService EndpointService
 	hitService HitService
 	logger          Logger
@@ -233,7 +231,7 @@ func (s *Server) Start(ctx context.Context) {
 	mux.HandleFunc("POST /endpoint/{id}", s.updateEndpoint)
 	mux.HandleFunc("POST /endpoint", s.insertEndpoint)
 
-	httpServer := &http.Server{
+	s.httpServer = &http.Server{
 		Addr:           s.addr,
 		Handler:        mux,
 		ReadTimeout:    10 * time.Second,
@@ -241,24 +239,20 @@ func (s *Server) Start(ctx context.Context) {
 		MaxHeaderBytes: 1 << 20,
 	}
 
-	dCtx, cancelDCtx := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-	defer cancelDCtx()
-
 	s.logger.InfoContext(ctx, "Server started", "address", s.addr)
 	go func() {
-		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := s.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			s.logger.ErrorContext(ctx, "Listening", "error", err)
 		}
 	}()
+}
 
-	<-dCtx.Done()
-
+func (s *Server) Shutdown(ctx context.Context) {
 	ctxCancel, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	errShutdown := httpServer.Shutdown(ctxCancel)
+	errShutdown := s.httpServer.Shutdown(ctxCancel)
 	if errShutdown != nil {
 		s.logger.ErrorContext(ctx, "Shutting down", "error", errShutdown)
 	}
-	return
 }

@@ -4,6 +4,8 @@ import (
 	"context"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/pudymody/pinger-go/endpoint"
 	"github.com/pudymody/pinger-go/hit"
@@ -12,7 +14,9 @@ import (
 )
 
 func main() {
-	ctx := context.Background()
+	ctx, cancelCtx := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	defer cancelCtx()
+
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 	sqlite, err := storage.NewSqlite(ctx, "db.db")
@@ -26,6 +30,9 @@ func main() {
 
 	server := web.NewServer(":8080", "", &endpointService, &hitService, logger)
 	server.Start(ctx)
+
+	<-ctx.Done()
+	server.Shutdown(context.Background())
 
 	logger.InfoContext(ctx, "Server stopped")
 }
