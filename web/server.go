@@ -2,11 +2,11 @@ package web
 
 import (
 	"context"
+	"fmt"
+	"html/template"
 	"net/http"
 	"strconv"
-	"html/template"
 	"time"
-	"fmt"
 
 	"github.com/pudymody/pinger-go/endpoint"
 	"github.com/pudymody/pinger-go/hit"
@@ -16,7 +16,7 @@ var tplAdmin = template.Must(template.ParseFS(templates, "admin.html"))
 var tplView = template.Must(template.New("view").Funcs(map[string]any{
 	"hitDates": func(hits []hit.Hit) []string {
 		dates := make([]string, len(hits))
-		for i,h := range hits {
+		for i, h := range hits {
 			dates[i] = h.CreatedAt.Format(time.RFC3339)
 		}
 
@@ -24,7 +24,7 @@ var tplView = template.Must(template.New("view").Funcs(map[string]any{
 	},
 	"hitLatencies": func(hits []hit.Hit) []int {
 		latencies := make([]int, len(hits))
-		for i,h := range hits {
+		for i, h := range hits {
 			latencies[i] = h.Latency / 100
 		}
 
@@ -33,20 +33,20 @@ var tplView = template.Must(template.New("view").Funcs(map[string]any{
 	"hitAnnotations": func(hits []hit.Hit) []map[string]any {
 		annotations := make([]map[string]any, 0)
 		totalHits := len(hits)
-		for i := 0; i < totalHits - 1; i++ {
+		for i := 0; i < totalHits-1; i++ {
 			h := hits[i]
 			h2 := hits[i+1]
 
 			if h.Latency == 0 {
 				annotations = append(annotations, map[string]any{
-					"x": h.CreatedAt.UnixMilli(),
-					"x2": h2.CreatedAt.UnixMilli(),
+					"x":         h.CreatedAt.UnixMilli(),
+					"x2":        h2.CreatedAt.UnixMilli(),
 					"fillColor": "#D9534F",
 				})
 			}
 		}
 
-		return annotations 
+		return annotations
 	},
 }).ParseFS(templates, "view.html"))
 
@@ -68,9 +68,9 @@ type Logger interface {
 
 type Server struct {
 	basePath        string
-	httpServer *http.Server
+	httpServer      *http.Server
 	endpointService EndpointService
-	hitService HitService
+	hitService      HitService
 	logger          Logger
 	addr            string
 }
@@ -79,14 +79,14 @@ func NewServer(addr string, basePath string, endpointService EndpointService, hi
 	return Server{
 		basePath:        basePath,
 		endpointService: endpointService,
-		hitService: hitService,
+		hitService:      hitService,
 		logger:          logger,
 		addr:            addr,
 	}
 }
 
 func endpointFromRequest(req *http.Request) (endpoint.Endpoint, error) {
-	id :=0 
+	id := 0
 	idRaw := req.PathValue("id")
 	if idRaw != "" {
 		idParsed, err := strconv.Atoi(idRaw)
@@ -95,7 +95,6 @@ func endpointFromRequest(req *http.Request) (endpoint.Endpoint, error) {
 		}
 		id = idParsed
 	}
-	
 
 	domain := req.PostFormValue("domain")
 	codeOkRaw := req.PostFormValue("code_ok")
@@ -118,25 +117,25 @@ func endpointFromRequest(req *http.Request) (endpoint.Endpoint, error) {
 	}, nil
 }
 
-func (s *Server) writeErr(ctx context.Context, resp http.ResponseWriter, err error){
-		s.logger.ErrorContext(ctx, err.Error())
-		resp.WriteHeader(http.StatusInternalServerError)
-		resp.Write([]byte(err.Error()))
+func (s *Server) writeErr(ctx context.Context, resp http.ResponseWriter, err error) {
+	s.logger.ErrorContext(ctx, err.Error())
+	resp.WriteHeader(http.StatusInternalServerError)
+	resp.Write([]byte(err.Error()))
 }
 
 type viewEndpointItem struct {
 	Endpoint endpoint.Endpoint
-	Hits []hit.Hit
+	Hits     []hit.Hit
 }
 
 type viewEndpointData struct {
-	CurrentDay time.Time
+	CurrentDay  time.Time
 	PreviousDay time.Time
-	NextDay time.Time
-	Items []viewEndpointItem
+	NextDay     time.Time
+	Items       []viewEndpointItem
 }
 
-func (s *Server) viewEndpoint(resp http.ResponseWriter, req *http.Request){
+func (s *Server) viewEndpoint(resp http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 
 	t0 := time.Now().UTC()
@@ -148,7 +147,7 @@ func (s *Server) viewEndpoint(resp http.ResponseWriter, req *http.Request){
 	}
 
 	from := time.Date(t0.Year(), t0.Month(), t0.Day(), 0, 0, 0, 0, time.UTC)
-	to := from.AddDate(0,0, 1)
+	to := from.AddDate(0, 0, 1)
 
 	endpoints, err := s.endpointService.GetAll(ctx)
 	if err != nil {
@@ -164,21 +163,21 @@ func (s *Server) viewEndpoint(resp http.ResponseWriter, req *http.Request){
 			return
 		}
 
-		items = append(items, viewEndpointItem {
+		items = append(items, viewEndpointItem{
 			Endpoint: e,
-			Hits: hits,
+			Hits:     hits,
 		})
 	}
 
 	tplView.ExecuteTemplate(resp, "view.html", viewEndpointData{
-		Items: items,
-		CurrentDay: from,
-		NextDay: from.AddDate(0,0,1),
-		PreviousDay: from.AddDate(0,0,-1),
+		Items:       items,
+		CurrentDay:  from,
+		NextDay:     from.AddDate(0, 0, 1),
+		PreviousDay: from.AddDate(0, 0, -1),
 	})
 }
 
-func (s *Server) listEndpoints(resp http.ResponseWriter, req *http.Request){
+func (s *Server) listEndpoints(resp http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 
 	endpoints, err := s.endpointService.GetAll(ctx)
@@ -190,10 +189,10 @@ func (s *Server) listEndpoints(resp http.ResponseWriter, req *http.Request){
 	tplAdmin.ExecuteTemplate(resp, "admin.html", endpoints)
 }
 
-func (s *Server) updateEndpoint(resp http.ResponseWriter, req *http.Request){
+func (s *Server) updateEndpoint(resp http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 
-	endpointPost, err := endpointFromRequest(req)	
+	endpointPost, err := endpointFromRequest(req)
 	if err != nil {
 		s.writeErr(ctx, resp, err)
 		return
@@ -206,10 +205,10 @@ func (s *Server) updateEndpoint(resp http.ResponseWriter, req *http.Request){
 	}
 	http.Redirect(resp, req, "/endpoint", http.StatusSeeOther)
 }
-func (s *Server) insertEndpoint(resp http.ResponseWriter, req *http.Request){
+func (s *Server) insertEndpoint(resp http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 
-	endpointPost, err := endpointFromRequest(req)	
+	endpointPost, err := endpointFromRequest(req)
 	if err != nil {
 		s.writeErr(ctx, resp, err)
 		return

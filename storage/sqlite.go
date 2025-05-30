@@ -72,16 +72,15 @@ func (s *Sqlite) GetEndpoint(ctx context.Context, id int) (endpoint.Endpoint, er
 	var item endpoint.Endpoint
 	var durationString string
 
-		if err := rows.Scan(&item.ID, &item.Domain, &item.CodeOK, &durationString); err != nil {
-			return endpoint.Endpoint{}, err
-		}
+	if err := rows.Scan(&item.ID, &item.Domain, &item.CodeOK, &durationString); err != nil {
+		return endpoint.Endpoint{}, err
+	}
 
-		duration, err := time.ParseDuration(durationString)
-		if err != nil {
-			return endpoint.Endpoint{}, err
-		}
-		item.Timeout = duration
-
+	duration, err := time.ParseDuration(durationString)
+	if err != nil {
+		return endpoint.Endpoint{}, err
+	}
+	item.Timeout = duration
 
 	return item, nil
 }
@@ -144,7 +143,7 @@ func (s *Sqlite) GetHits(ctx context.Context, endpointID int, from time.Time, to
 	items := make([]hit.Hit, 0)
 
 	for rows.Next() {
-		var item hit.Hit 
+		var item hit.Hit
 
 		if err := rows.Scan(&item.EndpointID, &item.Status, &item.Latency, &item.CreatedAt); err != nil {
 			return nil, err

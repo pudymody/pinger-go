@@ -5,14 +5,15 @@ import (
 )
 
 type Status string
+
 const (
-	StatusUP Status = "UP"
+	StatusUP   Status = "UP"
 	StatusDOWN Status = "DOWN"
 )
 
 type Hit struct {
 	EndpointID int
-	Status Status
-	Latency int
-	CreatedAt time.Time
+	Status     Status
+	Latency    int
+	CreatedAt  time.Time
 }
