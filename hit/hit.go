@@ -12,8 +12,8 @@ const (
 )
 
 type Hit struct {
-	EndpointID int
+	EndpointID int64
 	Status     Status
-	Latency    int
+	Latency    int64
 	CreatedAt  time.Time
 }

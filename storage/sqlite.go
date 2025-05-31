@@ -67,7 +67,7 @@ func (s *Sqlite) InsertEndpoint(ctx context.Context, item endpoint.Endpoint) err
 	return err
 }
 
-func (s *Sqlite) GetEndpoint(ctx context.Context, id int) (endpoint.Endpoint, error) {
+func (s *Sqlite) GetEndpoint(ctx context.Context, id int64) (endpoint.Endpoint, error) {
 	rows := s.conn.QueryRowContext(ctx, "SELECT id, domain, code_ok, timeout, interval FROM endpoints WHERE id = ?", id)
 
 	var item endpoint.Endpoint
@@ -148,7 +148,7 @@ func (s *Sqlite) InsertHit(ctx context.Context, item hit.Hit) error {
 	return err
 }
 
-func (s *Sqlite) GetHits(ctx context.Context, endpointID int, from time.Time, to time.Time) ([]hit.Hit, error) {
+func (s *Sqlite) GetHits(ctx context.Context, endpointID int64, from time.Time, to time.Time) ([]hit.Hit, error) {
 	rows, err := s.conn.QueryContext(ctx, "SELECT endpoint_id, status, latency, created_at FROM hits WHERE created_at >= ? AND created_at <= ? ORDER BY created_at ASC", from, to)
 	if err != nil {
 		return nil, err

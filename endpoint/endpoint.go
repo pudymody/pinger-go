@@ -5,7 +5,7 @@ import (
 )
 
 type Endpoint struct {
-	ID      int
+	ID      int64
 	Domain  string
 	CodeOK  int
 	Timeout time.Duration

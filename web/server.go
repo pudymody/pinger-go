@@ -22,10 +22,10 @@ var tplView = template.Must(template.New("view").Funcs(map[string]any{
 
 		return dates
 	},
-	"hitLatencies": func(hits []hit.Hit) []int {
-		latencies := make([]int, len(hits))
+	"hitLatencies": func(hits []hit.Hit) []int64 {
+		latencies := make([]int64, len(hits))
 		for i, h := range hits {
-			latencies[i] = h.Latency / 100
+			latencies[i] = h.Latency
 		}
 
 		return latencies
@@ -54,11 +54,11 @@ type EndpointService interface {
 	Insert(ctx context.Context, item endpoint.Endpoint) error
 	GetAll(ctx context.Context) ([]endpoint.Endpoint, error)
 	Update(ctx context.Context, item endpoint.Endpoint) error
-	Get(ctx context.Context, id int) (endpoint.Endpoint, error)
+	Get(ctx context.Context, id int64) (endpoint.Endpoint, error)
 }
 
 type HitService interface {
-	Get(ctx context.Context, endpointID int, from time.Time, to time.Time) ([]hit.Hit, error)
+	Get(ctx context.Context, endpointID int64, from time.Time, to time.Time) ([]hit.Hit, error)
 }
 
 type Logger interface {
@@ -116,7 +116,7 @@ func endpointFromRequest(req *http.Request) (endpoint.Endpoint, error) {
 	}
 
 	return endpoint.Endpoint{
-		ID:      id,
+		ID:      int64(id),
 		Domain:  domain,
 		CodeOK:  codeOk,
 		Timeout: timeout,
