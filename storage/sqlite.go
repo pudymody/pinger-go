@@ -149,7 +149,7 @@ func (s *Sqlite) InsertHit(ctx context.Context, item hit.Hit) error {
 }
 
 func (s *Sqlite) GetHits(ctx context.Context, endpointID int64, from time.Time, to time.Time) ([]hit.Hit, error) {
-	rows, err := s.conn.QueryContext(ctx, "SELECT endpoint_id, status, latency, created_at FROM hits WHERE created_at >= ? AND created_at <= ? ORDER BY created_at ASC", from, to)
+	rows, err := s.conn.QueryContext(ctx, "SELECT endpoint_id, status, latency, created_at FROM hits WHERE endpoint_id = ? AND created_at >= ? AND created_at <= ? ORDER BY created_at ASC", endpointID, from, to)
 	if err != nil {
 		return nil, err
 	}
