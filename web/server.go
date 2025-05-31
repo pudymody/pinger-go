@@ -124,8 +124,8 @@ func endpointFromRequest(req *http.Request) (endpoint.Endpoint, error) {
 	}, nil
 }
 
-func (s *Server) writeErr(ctx context.Context, resp http.ResponseWriter, err error) {
-	s.logger.ErrorContext(ctx, err.Error())
+func (s *Server) writeErr(ctx context.Context, resp http.ResponseWriter, msg string, err error) {
+	s.logger.ErrorContext(ctx, msg, "error", err.Error())
 	resp.WriteHeader(http.StatusInternalServerError)
 	resp.Write([]byte(err.Error()))
 }
@@ -158,7 +158,7 @@ func (s *Server) viewEndpoint(resp http.ResponseWriter, req *http.Request) {
 
 	endpoints, err := s.endpointService.GetAll(ctx)
 	if err != nil {
-		s.writeErr(ctx, resp, err)
+		s.writeErr(ctx, resp, "getting all endpoints", err)
 		return
 	}
 
@@ -166,7 +166,7 @@ func (s *Server) viewEndpoint(resp http.ResponseWriter, req *http.Request) {
 	for _, e := range endpoints {
 		hits, err := s.hitService.Get(ctx, e.ID, from, to)
 		if err != nil {
-			s.writeErr(ctx, resp, err)
+			s.writeErr(ctx, resp, "getting single endpoint", err)
 			return
 		}
 
@@ -189,7 +189,7 @@ func (s *Server) listEndpoints(resp http.ResponseWriter, req *http.Request) {
 
 	endpoints, err := s.endpointService.GetAll(ctx)
 	if err != nil {
-		s.writeErr(ctx, resp, err)
+		s.writeErr(ctx, resp, "getting all endpoints", err)
 		return
 	}
 
@@ -201,13 +201,13 @@ func (s *Server) updateEndpoint(resp http.ResponseWriter, req *http.Request) {
 
 	endpointPost, err := endpointFromRequest(req)
 	if err != nil {
-		s.writeErr(ctx, resp, err)
+		s.writeErr(ctx, resp, "getting endpoint from request", err)
 		return
 	}
 
 	err = s.endpointService.Update(ctx, endpointPost)
 	if err != nil {
-		s.writeErr(ctx, resp, err)
+		s.writeErr(ctx, resp, "updating endpoint", err)
 		return
 	}
 	http.Redirect(resp, req, "/endpoint", http.StatusSeeOther)
@@ -217,12 +217,12 @@ func (s *Server) insertEndpoint(resp http.ResponseWriter, req *http.Request) {
 
 	endpointPost, err := endpointFromRequest(req)
 	if err != nil {
-		s.writeErr(ctx, resp, err)
+		s.writeErr(ctx, resp, "getting endpoint from request", err)
 		return
 	}
 	err = s.endpointService.Insert(ctx, endpointPost)
 	if err != nil {
-		s.writeErr(ctx, resp, err)
+		s.writeErr(ctx, resp, "inserting endpoint", err)
 		return
 	}
 	http.Redirect(resp, req, "/endpoint", http.StatusSeeOther)
