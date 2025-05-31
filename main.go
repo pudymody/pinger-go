@@ -20,7 +20,7 @@ func main() {
 
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
-	sqlite, err := storage.NewSqlite(ctx, "db.db")
+	sqlite, err := storage.NewSqlite(ctx, "/data/db.db")
 	if err != nil {
 		logger.ErrorContext(ctx, "Opening storage", "error", err)
 		return
