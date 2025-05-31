@@ -136,7 +136,7 @@ type viewEndpointItem struct {
 }
 
 type viewEndpointData struct {
-	Base string
+	Base        string
 	CurrentDay  time.Time
 	PreviousDay time.Time
 	NextDay     time.Time
@@ -145,7 +145,7 @@ type viewEndpointData struct {
 
 type listEndpointData struct {
 	Items []endpoint.Endpoint
-	Base string
+	Base  string
 }
 
 func (s *Server) viewEndpoint(resp http.ResponseWriter, req *http.Request) {
@@ -183,7 +183,7 @@ func (s *Server) viewEndpoint(resp http.ResponseWriter, req *http.Request) {
 	}
 
 	tplView.ExecuteTemplate(resp, "view.html", viewEndpointData{
-		Base: s.basePath,
+		Base:        s.basePath,
 		Items:       items,
 		CurrentDay:  from,
 		NextDay:     from.AddDate(0, 0, 1),
@@ -202,7 +202,7 @@ func (s *Server) listEndpoints(resp http.ResponseWriter, req *http.Request) {
 
 	tplAdmin.ExecuteTemplate(resp, "admin.html", listEndpointData{
 		Items: endpoints,
-		Base: s.basePath,
+		Base:  s.basePath,
 	})
 }
 
@@ -244,7 +244,7 @@ func (s *Server) insertEndpoint(resp http.ResponseWriter, req *http.Request) {
 
 func (s *Server) Start(ctx context.Context) error {
 	mux := http.NewServeMux()
-	mux.Handle(fmt.Sprintf("GET %sassets/", s.basePath), http.StripPrefix(s.basePath,http.FileServerFS(templates)))
+	mux.Handle(fmt.Sprintf("GET %sassets/", s.basePath), http.StripPrefix(s.basePath, http.FileServerFS(templates)))
 
 	mux.HandleFunc(fmt.Sprintf("GET %s", s.basePath), s.viewEndpoint)
 	mux.HandleFunc(fmt.Sprintf("GET %sendpoint/", s.basePath), s.listEndpoints)
