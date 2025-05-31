@@ -53,7 +53,9 @@
 					}],
 					xaxis: {
 					 type: 'datetime',
-						// labels: { show: false },
+						labels: {
+							datetimeUTC: false,
+						},
 						categories: {{ hitDates .Hits }}
 					},
 					annotations: {

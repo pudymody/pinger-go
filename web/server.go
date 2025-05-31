@@ -145,15 +145,15 @@ type viewEndpointData struct {
 func (s *Server) viewEndpoint(resp http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 
-	t0 := time.Now().UTC()
+	t0 := time.Now()
 	fromQuery := req.URL.Query().Get("from")
 	if fromQuery != "" {
 		if parsedFrom, err := time.Parse(time.DateOnly, fromQuery); err == nil {
-			t0 = parsedFrom.UTC()
+			t0 = parsedFrom
 		}
 	}
 
-	from := time.Date(t0.Year(), t0.Month(), t0.Day(), 0, 0, 0, 0, time.UTC)
+	from := time.Date(t0.Year(), t0.Month(), t0.Day(), 0, 0, 0, 0, time.Local).UTC()
 	to := from.AddDate(0, 0, 1)
 
 	endpoints, err := s.endpointService.GetAll(ctx)
