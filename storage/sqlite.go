@@ -27,7 +27,8 @@ func NewSqlite(ctx context.Context, filepath string) (*Sqlite, error) {
 		id INTEGER PRIMARY KEY,
 		domain TEXT,
 		code_ok INTEGER,
-		timeout string
+		timeout string,
+		interval string
 	);
 
 	CREATE TABLE IF NOT EXISTS hits (
@@ -62,31 +63,38 @@ func NewSqlite(ctx context.Context, filepath string) (*Sqlite, error) {
 }
 
 func (s *Sqlite) InsertEndpoint(ctx context.Context, item endpoint.Endpoint) error {
-	_, err := s.conn.ExecContext(ctx, "INSERT INTO endpoints (domain, code_ok, timeout) VALUES (?,?,?)", item.Domain, item.CodeOK, item.Timeout.String())
+	_, err := s.conn.ExecContext(ctx, "INSERT INTO endpoints (domain, code_ok, timeout,interval) VALUES (?,?,?,?)", item.Domain, item.CodeOK, item.Timeout.String(), item.Interval.String())
 	return err
 }
 
 func (s *Sqlite) GetEndpoint(ctx context.Context, id int) (endpoint.Endpoint, error) {
-	rows := s.conn.QueryRowContext(ctx, "SELECT id, domain, code_ok, timeout FROM endpoints WHERE id = ?", id)
+	rows := s.conn.QueryRowContext(ctx, "SELECT id, domain, code_ok, timeout, interval FROM endpoints WHERE id = ?", id)
 
 	var item endpoint.Endpoint
 	var durationString string
+	var intervalString string
 
-	if err := rows.Scan(&item.ID, &item.Domain, &item.CodeOK, &durationString); err != nil {
+	if err := rows.Scan(&item.ID, &item.Domain, &item.CodeOK, &durationString, &intervalString); err != nil {
 		return endpoint.Endpoint{}, err
 	}
 
-	duration, err := time.ParseDuration(durationString)
+	timeout, err := time.ParseDuration(durationString)
 	if err != nil {
 		return endpoint.Endpoint{}, err
 	}
-	item.Timeout = duration
+	item.Timeout =timeout 
+
+	interval, err := time.ParseDuration(intervalString)
+	if err != nil {
+		return endpoint.Endpoint{}, err
+	}
+	item.Interval = interval
 
 	return item, nil
 }
 
 func (s *Sqlite) GetAllEndpoints(ctx context.Context) ([]endpoint.Endpoint, error) {
-	rows, err := s.conn.QueryContext(ctx, "SELECT id, domain, code_ok, timeout FROM endpoints")
+	rows, err := s.conn.QueryContext(ctx, "SELECT id, domain, code_ok, timeout, interval FROM endpoints")
 	if err != nil {
 		return nil, err
 	}
@@ -96,16 +104,22 @@ func (s *Sqlite) GetAllEndpoints(ctx context.Context) ([]endpoint.Endpoint, erro
 	for rows.Next() {
 		var item endpoint.Endpoint
 		var durationString string
+		var intervalString string
 
-		if err := rows.Scan(&item.ID, &item.Domain, &item.CodeOK, &durationString); err != nil {
+		if err := rows.Scan(&item.ID, &item.Domain, &item.CodeOK, &durationString, &intervalString); err != nil {
 			return nil, err
 		}
 
-		duration, err := time.ParseDuration(durationString)
+		timeout, err := time.ParseDuration(durationString)
 		if err != nil {
 			return nil, err
 		}
-		item.Timeout = duration
+		item.Timeout =timeout 
+		interval, err := time.ParseDuration(intervalString)
+		if err != nil {
+			return nil, err
+		}
+		item.Interval = interval
 		items = append(items, item)
 	}
 	// If the database is being written to ensure to check for Close
@@ -125,7 +139,7 @@ func (s *Sqlite) GetAllEndpoints(ctx context.Context) ([]endpoint.Endpoint, erro
 }
 
 func (s *Sqlite) UpdateEndpoint(ctx context.Context, item endpoint.Endpoint) error {
-	_, err := s.conn.ExecContext(ctx, "UPDATE endpoints SET domain = ?, code_ok = ?, timeout = ? WHERE id = ?", item.Domain, item.CodeOK, item.Timeout.String(), item.ID)
+	_, err := s.conn.ExecContext(ctx, "UPDATE endpoints SET domain = ?, code_ok = ?, timeout = ?, interval = ? WHERE id = ?", item.Domain, item.CodeOK, item.Timeout.String(), item.Interval.String(), item.ID)
 	return err
 }
 

@@ -9,4 +9,5 @@ type Endpoint struct {
 	Domain  string
 	CodeOK  int
 	Timeout time.Duration
+	Interval time.Duration
 }

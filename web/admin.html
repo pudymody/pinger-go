@@ -32,7 +32,14 @@
 					<label for="new_timeout">
 						Timeout
 					</label>
-					<input id="new_timeout" name="timeout" value="1m" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main">
+					<input id="new_timeout" name="timeout" value="15s" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main">
+				</div>
+
+				<div class="flex flex-1 flex-col">
+					<label for="new_interval">
+						Interval	
+					</label>
+					<input id="new_interval" name="interval" value="1m" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main">
 				</div>
 
 				<button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">Create</button>
@@ -60,6 +67,13 @@
 					<input id="{{ .ID }}_timeout" name="timeout" value="{{ .Timeout }}" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main">
 				</div>
 
+				<div class="flex flex-1 flex-col">
+					<label for="{{ .ID }}_interval">
+						Interval
+					</label>
+					<input id="{{ .ID }}_interval" name="interval" value="{{ .Interval }}" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main">
+				</div>
+				
 				<button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">Save</button>
 			</form>
 		{{ end }}

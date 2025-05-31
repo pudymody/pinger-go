@@ -109,11 +109,18 @@ func endpointFromRequest(req *http.Request) (endpoint.Endpoint, error) {
 		return endpoint.Endpoint{}, fmt.Errorf("Parsing timeout value: %w", err)
 	}
 
+	intervalRaw := req.PostFormValue("interval")
+	interval, err := time.ParseDuration(intervalRaw)
+	if err != nil {
+		return endpoint.Endpoint{}, fmt.Errorf("Parsing interval value: %w", err)
+	}
+
 	return endpoint.Endpoint{
 		ID:      id,
 		Domain:  domain,
 		CodeOK:  codeOk,
 		Timeout: timeout,
+		Interval: interval,
 	}, nil
 }
 
