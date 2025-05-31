@@ -82,7 +82,7 @@ func (s *Sqlite) GetEndpoint(ctx context.Context, id int64) (endpoint.Endpoint, 
 	if err != nil {
 		return endpoint.Endpoint{}, err
 	}
-	item.Timeout =timeout 
+	item.Timeout = timeout
 
 	interval, err := time.ParseDuration(intervalString)
 	if err != nil {
@@ -114,7 +114,7 @@ func (s *Sqlite) GetAllEndpoints(ctx context.Context) ([]endpoint.Endpoint, erro
 		if err != nil {
 			return nil, err
 		}
-		item.Timeout =timeout 
+		item.Timeout = timeout
 		interval, err := time.ParseDuration(intervalString)
 		if err != nil {
 			return nil, err

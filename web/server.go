@@ -116,10 +116,10 @@ func endpointFromRequest(req *http.Request) (endpoint.Endpoint, error) {
 	}
 
 	return endpoint.Endpoint{
-		ID:      int64(id),
-		Domain:  domain,
-		CodeOK:  codeOk,
-		Timeout: timeout,
+		ID:       int64(id),
+		Domain:   domain,
+		CodeOK:   codeOk,
+		Timeout:  timeout,
 		Interval: interval,
 	}, nil
 }
@@ -228,7 +228,7 @@ func (s *Server) insertEndpoint(resp http.ResponseWriter, req *http.Request) {
 	http.Redirect(resp, req, "/endpoint", http.StatusSeeOther)
 }
 
-func (s *Server) Start(ctx context.Context) {
+func (s *Server) Start(ctx context.Context) error {
 	mux := http.NewServeMux()
 	mux.Handle("GET /assets/", http.FileServerFS(templates))
 
@@ -251,14 +251,14 @@ func (s *Server) Start(ctx context.Context) {
 			s.logger.ErrorContext(ctx, "Listening", "error", err)
 		}
 	}()
+
+	return nil
 }
 
-func (s *Server) Shutdown(ctx context.Context) {
+func (s *Server) Shutdown(ctx context.Context) error {
 	ctxCancel, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	errShutdown := s.httpServer.Shutdown(ctxCancel)
-	if errShutdown != nil {
-		s.logger.ErrorContext(ctx, "Shutting down", "error", errShutdown)
-	}
+	return s.httpServer.Shutdown(ctxCancel)
+
 }
