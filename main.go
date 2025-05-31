@@ -29,7 +29,17 @@ func main() {
 	endpointService := endpoint.NewEndpointService(sqlite)
 	hitService := hit.NewHitService(sqlite)
 
-	server := web.NewServer(":8080", "/", &endpointService, &hitService, logger.With("name", "server"))
+	subPath := "/"
+	if subPathENV := os.Getenv("BASE_PATH"); subPathENV != "" {
+		subPath = subPathENV
+	}
+
+	addr := ":8080"
+	if addrENV := os.Getenv("HTTP_ADDR"); addrENV != "" {
+		addr = addrENV
+	}
+
+	server := web.NewServer(addr, subPath, &endpointService, &hitService, logger.With("name", "server"))
 	err = server.Start(ctx)
 	if err != nil {
 		logger.ErrorContext(ctx, "Opening server", "error", err)
