@@ -136,10 +136,16 @@ type viewEndpointItem struct {
 }
 
 type viewEndpointData struct {
+	Base string
 	CurrentDay  time.Time
 	PreviousDay time.Time
 	NextDay     time.Time
 	Items       []viewEndpointItem
+}
+
+type listEndpointData struct {
+	Items []endpoint.Endpoint
+	Base string
 }
 
 func (s *Server) viewEndpoint(resp http.ResponseWriter, req *http.Request) {
@@ -177,6 +183,7 @@ func (s *Server) viewEndpoint(resp http.ResponseWriter, req *http.Request) {
 	}
 
 	tplView.ExecuteTemplate(resp, "view.html", viewEndpointData{
+		Base: s.basePath,
 		Items:       items,
 		CurrentDay:  from,
 		NextDay:     from.AddDate(0, 0, 1),
@@ -193,7 +200,10 @@ func (s *Server) listEndpoints(resp http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	tplAdmin.ExecuteTemplate(resp, "admin.html", endpoints)
+	tplAdmin.ExecuteTemplate(resp, "admin.html", listEndpointData{
+		Items: endpoints,
+		Base: s.basePath,
+	})
 }
 
 func (s *Server) updateEndpoint(resp http.ResponseWriter, req *http.Request) {
@@ -210,7 +220,9 @@ func (s *Server) updateEndpoint(resp http.ResponseWriter, req *http.Request) {
 		s.writeErr(ctx, resp, "updating endpoint", err)
 		return
 	}
-	http.Redirect(resp, req, "/endpoint", http.StatusSeeOther)
+
+	redirectURL := fmt.Sprintf("%sendpoint", s.basePath)
+	http.Redirect(resp, req, redirectURL, http.StatusSeeOther)
 }
 func (s *Server) insertEndpoint(resp http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
@@ -225,17 +237,19 @@ func (s *Server) insertEndpoint(resp http.ResponseWriter, req *http.Request) {
 		s.writeErr(ctx, resp, "inserting endpoint", err)
 		return
 	}
-	http.Redirect(resp, req, "/endpoint", http.StatusSeeOther)
+
+	redirectURL := fmt.Sprintf("%sendpoint", s.basePath)
+	http.Redirect(resp, req, redirectURL, http.StatusSeeOther)
 }
 
 func (s *Server) Start(ctx context.Context) error {
 	mux := http.NewServeMux()
-	mux.Handle("GET /assets/", http.FileServerFS(templates))
+	mux.Handle(fmt.Sprintf("GET %sassets/", s.basePath), http.StripPrefix(s.basePath,http.FileServerFS(templates)))
 
-	mux.HandleFunc("GET /", s.viewEndpoint)
-	mux.HandleFunc("GET /endpoint/", s.listEndpoints)
-	mux.HandleFunc("POST /endpoint/{id}", s.updateEndpoint)
-	mux.HandleFunc("POST /endpoint", s.insertEndpoint)
+	mux.HandleFunc(fmt.Sprintf("GET %s", s.basePath), s.viewEndpoint)
+	mux.HandleFunc(fmt.Sprintf("GET %sendpoint/", s.basePath), s.listEndpoints)
+	mux.HandleFunc(fmt.Sprintf("POST %sendpoint/{id}", s.basePath), s.updateEndpoint)
+	mux.HandleFunc(fmt.Sprintf("POST %sendpoint", s.basePath), s.insertEndpoint)
 
 	s.httpServer = &http.Server{
 		Addr:           s.addr,

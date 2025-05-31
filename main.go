@@ -29,7 +29,7 @@ func main() {
 	endpointService := endpoint.NewEndpointService(sqlite)
 	hitService := hit.NewHitService(sqlite)
 
-	server := web.NewServer(":8080", "", &endpointService, &hitService, logger.With("name", "server"))
+	server := web.NewServer(":8080", "/", &endpointService, &hitService, logger.With("name", "server"))
 	err = server.Start(ctx)
 	if err != nil {
 		logger.ErrorContext(ctx, "Opening server", "error", err)
