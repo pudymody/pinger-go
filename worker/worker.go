@@ -3,6 +3,7 @@ package worker
 import (
 	"context"
 	"errors"
+	"io"
 	"net"
 	"net/http"
 	"net/http/httptrace"
@@ -71,6 +72,8 @@ func (w *Worker) work(ctx context.Context, id int64) {
 		Timeout: endpoint.Timeout,
 	}
 	resp, err := client.Do(req)
+	io.Copy(io.Discard, resp.Body)
+	resp.Body.Close()
 
 	var timeoutErr net.Error
 	isTimeout := errors.As(err, &timeoutErr) && timeoutErr.Timeout()
