@@ -27,7 +27,7 @@
 			</nav>
 		</header>
 		{{ range .Items }}
-			<div class="container mx-auto rounded-lg border border-border/60 bg-card text-card-foreground shadow-sm px-4 sm:px-6 pt-3 sm:pt-4 pb-5">
+			<div class="container mx-auto rounded-lg border border-border/60 bg-card text-card-foreground shadow-sm px-4 sm:px-6 pt-3 sm:pt-4 pb-5 my-8">
 				<h1 class="font-semibold tracking-tight text-xl sm:text-2xl">{{ .Endpoint.Domain }}</h1>
 				<div class="chart_{{ .Endpoint.ID }}"></div>
 			</div>
