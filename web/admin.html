@@ -16,6 +16,12 @@
 		<div class="overview">
 			<form class="container mx-auto rounded-lg border border-border/60 bg-card text-card-foreground shadow-sm px-4 sm:px-6 pt-3 sm:pt-4 pb-5 my-8 flex flex-wrap gap-2 sm:gap-4 items-end" action="endpoint" method="post">
 				<div class="flex flex-1 flex-col">
+					<label for="new_name">
+						Name
+					</label>
+					<input id="new_name" name="name" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main">
+				</div>
+				<div class="flex flex-1 flex-col">
 					<label for="new_domain">
 						Domain
 					</label>
@@ -26,7 +32,7 @@
 					<label for="new_code_ok">
 						Code OK
 					</label>
-					<input id="new_code_ok" name="code_ok" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main">
+					<input id="new_code_ok" name="code_ok" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main" value="200">
 				</div>
 
 				<div class="flex flex-1 flex-col">
@@ -47,6 +53,12 @@
 			</form>
 		{{ range .Items }}
 			<form class="container mx-auto rounded-lg border border-border/60 bg-card text-card-foreground shadow-sm px-4 sm:px-6 pt-3 sm:pt-4 pb-5 my-8 flex flex-wrap gap-2 sm:gap-4 items-end" action="endpoint/{{ .ID }}" method="post">
+				<div class="flex flex-1 flex-col">
+					<label for="{{ .ID }}_name">
+						Name
+					</label>
+					<input id="{{ .ID }}_name" name="name" value="{{ .Name }}" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main">
+				</div>
 				<div class="flex flex-1 flex-col">
 					<label for="{{ .ID }}_domain">
 						Domain

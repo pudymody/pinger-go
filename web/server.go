@@ -96,6 +96,7 @@ func endpointFromRequest(req *http.Request) (endpoint.Endpoint, error) {
 		id = idParsed
 	}
 
+	name := req.PostFormValue("name")
 	domain := req.PostFormValue("domain")
 	codeOkRaw := req.PostFormValue("code_ok")
 	codeOk, err := strconv.Atoi(codeOkRaw)
@@ -117,6 +118,7 @@ func endpointFromRequest(req *http.Request) (endpoint.Endpoint, error) {
 
 	return endpoint.Endpoint{
 		ID:       int64(id),
+		Name:     name,
 		Domain:   domain,
 		CodeOK:   codeOk,
 		Timeout:  timeout,
