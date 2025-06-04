@@ -43,10 +43,12 @@
 						height: 300,
 						type: 'line',
 						toolbar: { show: false },
-						zoom : { enabled : true }
+						zoom : { enabled : false }
 					},
 					stroke: {
-						width: 1.5
+						width: 1.5,
+						curve: "smooth",
+						lineCap: "round"
 					},
 					series: [{
 						name: 'Latency',
