@@ -5,89 +5,80 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<base href="{{ .Base }}">
 	<link rel="stylesheet" href="assets/styles.css"/>
-	<script src="assets/apexcharts.js"></script>
 	</head>
 	<body>
-<header class="container mx-auto flex items-center bg-card px-4 py-2 sm:px-6 sm:py-3 border border-border/60 bt-0 rounded-md my-4 sticky top-0 z-1">
-			<a href="" class="block p-1 hover:bg-main rounded-md"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+		<header class="container">
+			<a href=""><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
   <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
 </svg></a>
 		</header>
 		<div class="overview">
-			<form class="container mx-auto rounded-lg border border-border/60 bg-card text-card-foreground shadow-sm px-4 sm:px-6 pt-3 sm:pt-4 pb-5 my-8 flex flex-wrap gap-2 sm:gap-4 items-end" action="endpoint" method="post">
-				<div class="flex flex-1 flex-col">
+			<form class="container card card--form" action="endpoint" method="post">
 					<label for="new_name">
-						Name
+						<span class="label_title">Name</span>
+						<span class="label_desc">Recognizable name of the endpoint</span>
 					</label>
-					<input id="new_name" name="name" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main">
-				</div>
-				<div class="flex flex-1 flex-col">
+					<input id="new_name" name="name">
+
 					<label for="new_domain">
-						Domain
+						<span class="label_title">Domain</span>
+						<span class="label_desc">Domain to check for availability, for example: https://example.com</span>
 					</label>
-					<input id="new_domain" name="domain" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main">
-				</div>
+					<input id="new_domain" name="domain">
 
-				<div class="flex flex-1 flex-col">
 					<label for="new_code_ok">
-						Code OK
+						<span class="label_title">Code OK</span>
+						<span class="label_desc">HTTP Status code to utilize as a correct response</span>
 					</label>
-					<input id="new_code_ok" name="code_ok" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main" value="200">
-				</div>
+					<input id="new_code_ok" name="code_ok" value="200">
 
-				<div class="flex flex-1 flex-col">
 					<label for="new_timeout">
-						Timeout
+						<span class="label_title">Timeout</span>
+						<span class="label_desc">Timeout to utilize when requesting the endpoint, for example: 15m its 15 minutes</span>
 					</label>
-					<input id="new_timeout" name="timeout" value="15s" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main">
-				</div>
+					<input id="new_timeout" name="timeout" value="15s">
 
-				<div class="flex flex-1 flex-col">
 					<label for="new_interval">
-						Interval	
+						<span class="label_title">Interval</span>
+						<span class="label_desc">Interval to utilize between request to the endpoint, for example: 15m its 15 minutes</span>
 					</label>
-					<input id="new_interval" name="interval" value="1m" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main">
-				</div>
+					<input id="new_interval" name="interval" value="1m">
 
-				<button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">Create</button>
+				<button>Create</button>
 			</form>
 		{{ range .Items }}
-			<form class="container mx-auto rounded-lg border border-border/60 bg-card text-card-foreground shadow-sm px-4 sm:px-6 pt-3 sm:pt-4 pb-5 my-8 flex flex-wrap gap-2 sm:gap-4 items-end" action="endpoint/{{ .ID }}" method="post">
-				<div class="flex flex-1 flex-col">
-					<label for="{{ .ID }}_name">
-						Name
-					</label>
-					<input id="{{ .ID }}_name" name="name" value="{{ .Name }}" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main">
-				</div>
-				<div class="flex flex-1 flex-col">
-					<label for="{{ .ID }}_domain">
-						Domain
-					</label>
-					<input id="{{ .ID }}_domain" name="domain" value="{{ .Domain }}" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main">
-				</div>
+			<form class="container card card--form" action="endpoint/{{ .ID }}" method="post">
+				<label for="{{ .ID }}_name">
+					<span class="label_title">Name</span>
+					<span class="label_desc">Recognizable name of the endpoint</span>
+				</label>
+				<input id="{{ .ID }}_name" name="name" value="{{ .Name }}">
 
-				<div class="flex flex-1 flex-col">
-					<label for="{{ .ID }}_code_ok">
-						Code OK
-					</label>
-					<input id="{{ .ID }}_code_ok" name="code_ok" value="{{ .CodeOK }}" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main">
-				</div>
+				<label for="{{ .ID }}_domain">
+					<span class="label_title">Domain</span>
+					<span class="label_desc">Domain to check for availability, for example: https://example.com</span>
+				</label>
+				<input id="{{ .ID }}_domain" name="domain" value="{{ .Domain }}">
 
-				<div class="flex flex-1 flex-col">
-					<label for="{{ .ID }}_timeout">
-						Timeout
-					</label>
-					<input id="{{ .ID }}_timeout" name="timeout" value="{{ .Timeout }}" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main">
-				</div>
+				<label for="{{ .ID }}_code_ok">
+					<span class="label_title">Code OK</span>
+					<span class="label_desc">HTTP Status code to utilize as a correct response</span>
+				</label>
+				<input id="{{ .ID }}_code_ok" name="code_ok" value="{{ .CodeOK }}">
 
-				<div class="flex flex-1 flex-col">
-					<label for="{{ .ID }}_interval">
-						Interval
-					</label>
-					<input id="{{ .ID }}_interval" name="interval" value="{{ .Interval }}" class="rounded-md border text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-1 border-border/60 bg-main">
-				</div>
+				<label for="{{ .ID }}_timeout">
+					<span class="label_title">Timeout</span>
+					<span class="label_desc">Timeout to utilize when requesting the endpoint, for example: 15m its 15 minutes</span>
+				</label>
+				<input id="{{ .ID }}_timeout" name="timeout" value="{{ .Timeout }}">
+
+				<label for="{{ .ID }}_interval">
+					<span class="label_title">Interval</span>
+					<span class="label_desc">Interval to utilize between request to the endpoint, for example: 15m its 15 minutes</span>
+				</label>
+				<input id="{{ .ID }}_interval" name="interval" value="{{ .Interval }}">
 				
-				<button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">Save</button>
+				<button>Save</button>
 			</form>
 		{{ end }}
 		</div>
