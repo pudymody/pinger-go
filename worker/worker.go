@@ -88,7 +88,11 @@ func (w *Worker) work(ctx context.Context, id int64) {
 	status := hit.StatusUP
 	if err != nil || resp.StatusCode != endpoint.CodeOK {
 		status = hit.StatusDOWN
-		w.logger.InfoContext(ctx, "Check returned down", "endpoint_id", endpoint.ID, "status", resp.StatusCode, "error", err)
+		code := 0;
+		if resp != nil {
+			code = resp.StatusCode;
+		}
+		w.logger.InfoContext(ctx, "Check returned down", "endpoint_id", endpoint.ID, "status", code, "error", err)
 	}
 	insertErr := w.hitService.Insert(ctx, hit.Hit{
 		EndpointID: endpoint.ID,
